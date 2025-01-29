@@ -6,6 +6,14 @@ import FitgirlAPI
 import html
 
 
+import argparse
+
+parser = argparse.ArgumentParser(description="Process some launch parameters.")
+parser.add_argument("--test", action="store_true", help="enable testing mode")
+parser.add_argument("--verbose", action="store_true", help="Enable verbose output")
+
+args = parser.parse_args()
+
 load_dotenv()
 
 intents = discord.Intents.all()
@@ -14,8 +22,11 @@ fitgirl = FitgirlAPI.FitGirl()
 
 bot = discord.Bot(intents=intents)
 
-test_guild_id = [1224478474303963246]
-
+if(args.test):
+    test_guild_id = [1224478474303963246]
+else:
+    test_guild_id = None
+    
 @bot.event
 async def on_ready():
     print(f"We have logged in as {bot.user}")
@@ -58,38 +69,38 @@ async def latest(ctx: discord.Interaction):
     await ctx.respond(f"latest post:",embed=embed)
 
 @bot.command(description="Search for a game", guild_ids=test_guild_id)
-async def search(ctx: discord.Interaction, querry: discord.Option(str)): # type: ignore
+async def search(ctx: discord.Interaction, query: discord.Option(str,description="the game you want to search for")): # type: ignore
     embed:discord.Embed = discord.Embed(
-        title="Search Result",
+        title=f"Search Result for \"{query}\"",
         color=discord.Colour.from_rgb(0,0,0)
     )
     
-    querry_result = fitgirl.search(querry)
+    query_result = fitgirl.search(query)
 
-    if querry_result["status"] == "Error":
+    if query_result["status"] == "Error":
         return await ctx.respond("No results found")
     
-    for result in querry_result["results"]:
+    for result in query_result["results"]:
         fixed_title = html.unescape(f"{result['title']}")
         embed.add_field(name="",value=f"[{fixed_title}]({result['url']})", inline=False)
 
     await ctx.respond(embed=embed)
 
 @bot.command(description="Get all the download links for a specific Game", guild_ids=test_guild_id)
-async def download(ctx: discord.Interaction, querry: discord.Option(str)): # type: ignore
-    
-    querry_result = fitgirl.download(querry)
+async def download(ctx: discord.Interaction, query: discord.Option(str,description="the game you want to download")): # type: ignore
 
-    if querry_result["status"] == "Error":
+    query_result = fitgirl.download(query)
+
+    if query_result["status"] == "Error":
         return await ctx.respond("No results found")
     
     embed:discord.Embed = discord.Embed(
-        title=f"Download \"{html.unescape(querry_result['game'])}\"",
+        title=f"Download \"{html.unescape(query_result['game'])}\"",
         description="Download links:",
         color=discord.Colour.from_rgb(0,0,0)
     )
     
-    for result in querry_result["results"]:
+    for result in query_result["results"]:
         fixed_title = html.unescape(f"{result['title']}")
         embed.add_field(name="",value=f"[{fixed_title}]({result['url']})", inline=False)
 
