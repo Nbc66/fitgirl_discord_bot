@@ -12,6 +12,9 @@ class botloger:
         @wraps(func)
         async def wrapper(ctx, *args, **kwargs):
             # Log the command name and who called it
-            logging.info(f"Command '{func.__name__}' called by {ctx.author} in guild {ctx.guild}(id:{ctx.guild.id}).")
+            if ctx.guild != None:
+                logging.info(f"Command '{func.__name__}' called by {ctx.author} in guild {ctx.guild}(id:{ctx.guild.id}).")
+            else:
+                logging.info(f"Command '{func.__name__}' called by {ctx.author}.")
             return await func(ctx, *args, **kwargs)
         return wrapper
