@@ -1,0 +1,4 @@
+[submodule "FitgirlAPI"]
+	path = FitgirlAPI
+	url = git@github.com:Nbc66/FitgirlAPI.git
+	branch = updated-downloads-api-call
