@@ -23,6 +23,13 @@
             "args": [
                 "--test"
             ]
+        },
+        {
+            "name": "bot Debugger: Debug Normal Bot Globaly",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${workspaceFolder}/bot.py",
+            "console": "integratedTerminal",
         }
     ]
 }

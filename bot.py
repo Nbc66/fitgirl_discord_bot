@@ -5,8 +5,12 @@ import os
 import FitgirlAPI
 import html
 
+from loger import botloger
+
+log = botloger()
 
 import argparse
+
 
 parser = argparse.ArgumentParser(description="Process some launch parameters.")
 parser.add_argument("--test", action="store_true", help="enable testing mode")
@@ -22,11 +26,11 @@ fitgirl = FitgirlAPI.FitGirl()
 
 bot = discord.Bot(intents=intents)
 
-if(args.test):
+if args.test:
     test_guild_id = [1224478474303963246]
 else:
     test_guild_id = None
-    
+
 @bot.event
 async def on_ready():
     print(f"We have logged in as {bot.user}")
@@ -49,6 +53,7 @@ async def on_application_command_error(ctx, error):
         await ctx.respond(f"An unexpected error occurred: {error}")
 
 @bot.command(description="Get the latest Post from the fitgirl Website",guild_ids=test_guild_id)
+@log.log_command
 async def latest(ctx: discord.Interaction):
 
     latest_posts = fitgirl.new_posts()
@@ -69,6 +74,7 @@ async def latest(ctx: discord.Interaction):
     await ctx.respond(f"latest post:",embed=embed)
 
 @bot.command(description="Search for a game", guild_ids=test_guild_id)
+@log.log_command
 async def search(ctx: discord.Interaction, query: discord.Option(str,description="the game you want to search for")): # type: ignore
     embed:discord.Embed = discord.Embed(
         title=f"Search Result for \"{query}\"",
@@ -87,6 +93,7 @@ async def search(ctx: discord.Interaction, query: discord.Option(str,description
     await ctx.respond(embed=embed)
 
 @bot.command(description="Get all the download links for a specific Game", guild_ids=test_guild_id)
+@log.log_command
 async def download(ctx: discord.Interaction, query: discord.Option(str,description="the game you want to download")): # type: ignore
 
     query_result = fitgirl.download(query)
